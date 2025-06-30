@@ -24,7 +24,7 @@ class QuestionBank(FileHandler):
 
     def collect_questions(self):
         while True:
-            print("Welcome to quiz maker! The quiz will start after...")
+            print("Welcome to quiz maker! The quiz will start shortly after you input all of your questions...")
             question_text = input("Enter your question: ")
             option_a = input("A. ")
             option_b = input("B. ")
@@ -106,3 +106,19 @@ class QuizProgram:
 
         self.current_index += 1
         self.window.after(1000, self.display_next_question)
+
+class QuizManager:
+    def __init__(self, file_path):
+        self.question_bank = QuestionBank(file_path)
+        self.start_quiz()
+
+    def start_quiz(self):
+        self.question_bank.collect_questions()
+        print("Starting quiz...\n")
+        self.question_bank.load_questions()
+        random.shuffle(self.question_bank.quiz_items)
+        QuizProgram(self.question_bank.quiz_items)
+
+if __name__ == "__main__":
+    file_path = r"saved_quiz_data.txt"
+    QuizManager(file_path)
