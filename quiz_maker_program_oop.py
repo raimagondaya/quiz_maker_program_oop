@@ -17,15 +17,48 @@ class FileHandler:
             lines = [line.strip() for line in file_reader if line.strip()]
         return lines
 
-quiz_data = []
-line_index = 0
-while line_index + 5 < len(lines):
-    quiz_data.append((
-        lines[line_index],
-        [lines[line_index+1], lines[line_index+2], lines[line_index+3], lines[line_index+4]],
-        lines[line_index+5]
-    ))
-    line_index += 6
+class QuestionBank(FileHandler):
+    def __init__(self, file_path):
+        super().__init__(file_path)
+        self.quiz_items = []
+
+    def collect_questions(self):
+        while True:
+            print("Welcome to quiz maker! The quiz will start after...")
+            question_text = input("Enter your question: ")
+            option_a = input("A. ")
+            option_b = input("B. ")
+            option_c = input("C. ")
+            option_d = input("D. ")
+            correct_answer = input("Enter the correct answer (A, B, C, or D): ").upper()
+
+            while correct_answer not in ['A', 'B', 'C', 'D']:
+                correct_answer = input("Enter the correct answer (A, B, C, or D): ").upper()
+
+            self.write_question_to_file(
+                question_text,
+                [option_a, option_b, option_c, option_d],
+                correct_answer
+            )
+
+            continue_prompt = input("Add another question? (yes/no): ").lower()
+            if continue_prompt != 'yes':
+                break
+
+    def load_questions(self):
+        raw_lines = self.read_quiz_data()
+        index = 0
+        while index + 5 < len(raw_lines):
+            question_text = raw_lines[index]
+            options = [raw_lines[index+1], raw_lines[index+2], raw_lines[index+3], raw_lines[index+4]]
+            correct_option = raw_lines[index+5]
+            self.quiz_items.append((question_text, options, correct_option))
+            index += 6
+
+file_path = r"C:\\OOP\\simple-number-programs\\quiz_maker\\saved_quiz_data.txt"
+question_bank = QuestionBank(file_path)
+
+
 
 random.shuffle(quiz_data)
 
