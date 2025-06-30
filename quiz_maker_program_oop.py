@@ -1,40 +1,21 @@
 import tkinter as tk
 import random
 
-file_path = r"C:\\OOP\\simple-number-programs\\quiz_maker\\saved_quiz_data.txt"
+class FileHandler:
+    def __init__(self, file_path):
+        self.file_path = file_path
 
-questions = []
-options = []
-answers = []
+    def write_question_to_file(self, question_text, option_list, correct_answer):
+        with open(self.file_path, "a", encoding="utf-8") as file_writer:
+            file_writer.write(question_text.strip() + "\n")
+            for option in option_list:
+                file_writer.write(option.strip() + "\n")
+            file_writer.write(correct_answer.strip() + "\n")
 
-while True:
-    print("Welcome to quiz maker! The quiz will start after...")
-    question_text = input("Enter your question: ")
-    option_text_a = input("A. ")
-    option_text_b = input("B. ")
-    option_text_c = input("C. ")
-    option_text_d = input("D. ")
-    correct_choice = input("Enter the correct answer (A, B, C, or D): ").upper()
-
-    while correct_choice not in ['A', 'B', 'C', 'D']:
-        correct_choice = input("Enter the correct answer (A, B, C, or D): ").upper()
-
-    with open(file_path, "a", encoding="utf-8") as file_writer:
-        file_writer.write(question_text.strip() + "\n")
-        file_writer.write(option_text_a.strip() + "\n")
-        file_writer.write(option_text_b.strip() + "\n")
-        file_writer.write(option_text_c.strip() + "\n")
-        file_writer.write(option_text_d.strip() + "\n")
-        file_writer.write(correct_choice.strip() + "\n")
-
-    add_more = input("Add another question? (yes/no): ").lower()
-    if add_more != 'yes':
-        break
-
-print("Opening quiz...")
-
-with open(file_path, "r", encoding="utf-8") as file_reader:
-    lines = [line.strip() for line in file_reader if line.strip()]
+    def read_quiz_data(self):
+        with open(self.file_path, "r", encoding="utf-8") as file_reader:
+            lines = [line.strip() for line in file_reader if line.strip()]
+        return lines
 
 quiz_data = []
 line_index = 0
