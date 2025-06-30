@@ -55,53 +55,54 @@ class QuestionBank(FileHandler):
             self.quiz_items.append((question_text, options, correct_option))
             index += 6
 
-file_path = r"C:\\OOP\\simple-number-programs\\quiz_maker\\saved_quiz_data.txt"
-question_bank = QuestionBank(file_path)
+class QuizProgram:
+    def __init__(self, quiz_data):
+        self.quiz_data = quiz_data
+        self.current_index = 0
+        self.score = 0
 
+        self.window = tk.Tk()
+        self.window.title("Quiz Game")
+        self.window.geometry("800x600")
+        self.window.configure(bg="black")
 
+        self.question_label = tk.Label(self.window, text="", fg="white", bg="black", font=("Arial", 20), wraplength=700)
+        self.question_label.pack(pady=50)
 
-random.shuffle(quiz_data)
+        self.option_buttons = []
+        for _ in range(4):
+            button = tk.Button(self.window, text="", font=("Arial", 16), width=30)
+            button.pack(pady=10)
+            self.option_buttons.append(button)
 
-root = tk.Tk()
-root.title("Quiz Game")
-root.geometry("800x600")
-root.configure(bg="black")
+        self.display_next_question()
+        self.window.mainloop()
 
-question_label = tk.Label(root, text="", fg="white", bg="black", font=("Arial", 20), wraplength=700)
-question_label.pack(pady=50)
+    def display_next_question(self):
+        if self.current_index >= len(self.quiz_data):
+            self.question_label.config(text=f"Quiz Over! Score: {self.score}/{len(self.quiz_data)}")
+            for button in self.option_buttons:
+                button.pack_forget()
+            return
 
-buttons = []
-for _ in range(4):
-    button = tk.Button(root, text="", font=("Arial", 16), width=30)
-    button.pack(pady=10)
-    buttons.append(button)
+        question_text, options, _ = self.quiz_data[self.current_index]
+        self.question_label.config(text=question_text)
 
-score = 0
-current = 0
+        for index, button in enumerate(self.option_buttons):
+            button.config(
+                text=options[index],
+                command=lambda selected_option=chr(65 + index): self.check_answer(selected_option)
+            )
 
-def next_question():
-    global current
-    if current >= len(quiz_data):
-        question_label.config(text=f"Quiz Over! Score: {score}/{len(quiz_data)}")
-        for button in buttons:
-            button.pack_forget()
-        return
-    question_text, answer_options, correct_answer = quiz_data[current]
-    question_label.config(text=question_text)
-    for index, button in enumerate(buttons):
-        button.config(text=answer_options[index], command=lambda user_choice=chr(65+index): check_answer(user_choice))
-    root.configure(bg="black")
+        self.window.configure(bg="black")
 
-def check_answer(user_choice):
-    global score, current
-    correct = quiz_data[current][2]
-    if user_choice == correct:
-        root.configure(bg="green")
-        score += 1
-    else:
-        root.configure(bg="red")
-    current += 1
-    root.after(1000, next_question)
+    def check_answer(self, selected_option):
+        correct_answer = self.quiz_data[self.current_index][2]
+        if selected_option == correct_answer:
+            self.window.configure(bg="green")
+            self.score += 1
+        else:
+            self.window.configure(bg="red")
 
-next_question()
-root.mainloop()
+        self.current_index += 1
+        self.window.after(1000, self.display_next_question)
